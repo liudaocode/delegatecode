@@ -1,5 +1,5 @@
 # delegatecode
-此篇为委托与事件的理解练习，建议点击Commits查看提交历程
+此项目为委托与事件的理解练习，建议点击Commits查看提交历程
 
 https://github.com/liudaocode/delegatecode/commits/master
 
