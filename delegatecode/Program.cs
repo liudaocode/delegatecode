@@ -6,55 +6,59 @@ using System.Text;
 
 namespace delegatecode
 {
-    public delegate void GreetingDelegate(string name);
-
-    public class GreetingManager
+    public class Heater
     {
-        //在类的内部，不管你声明它是public还是protected，它总是private的。在类的外部，注册“+=”和注销“-=”的访问限定符与你在声明事件时使用的访问符相同。
-        public event GreetingDelegate delegate1;
-
-        public void GreetPeople(string name)
+        private int temperature; // 水温
+        public delegate void BoilHandler(int param);//声明委托
+        public event BoilHandler BoilEvent;         //声明事件
+        // 烧水
+        public void BoilWater()
         {
-            if (delegate1 != null)
-            {     //如果有方法注册委托变量
-                delegate1(name);      //通过委托调用方法
+            for (int i = 0; i <= 100; i++)
+            {
+                temperature = i;
+
+                if (temperature > 95)
+                {
+                    //if (BoilEvent != null)        //如果有对象注册
+                    //{
+                    //    BoilEvent(temperature);   //调用所有注册对象的方法
+                    //}
+                    BoilEvent?.Invoke(temperature);
+                }
             }
+        }
+    }
+    // 警报器
+    public class Alarm
+    {
+        // 发出语音警报
+        public void MakeAlert(int param)
+        {
+            Trace.WriteLine(string.Format("Alarm：嘀嘀嘀，水已经 {0} 度了：", param));
+        }
+    }
+    // 显示器
+    public class Display
+    {
+        public static void ShowMsg(int param)
+        { //静态方法
+            Trace.WriteLine(string.Format("Display：水快开了，当前温度：{0}度。", param));
         }
     }
 
     class Program
     {
-        private static void GreetPeople(string name, GreetingDelegate MakeGreeting)
-        {
-            // 做某些额外的事情，比如初始化之类，此处略
-            MakeGreeting(name);
-        }
-        public static void EnglishGreeting(string name)
-        {
-            //打印到输出窗口
-            //重定向到即时窗口https://www.cnblogs.com/xwgli/p/3625925.html
-            Trace.WriteLine("Morning, " + name);
-        }
-        private static void ChineseGreeting(string name)
-        {
-            Trace.WriteLine("早上好, " + name);
-        }
         static void Main(string[] args)
         {
-            GreetingManager gm = new GreetingManager();
-            gm.delegate1 += EnglishGreeting;
-            gm.delegate1 += ChineseGreeting;
+            Heater ht = new Heater();
+            Alarm alarm = new Alarm();
 
-            gm.GreetPeople("liudao");
+            ht.BoilEvent += alarm.MakeAlert;    //注册方法
+            ht.BoilEvent += (new Alarm()).MakeAlert;   //给匿名对象注册方法
+            ht.BoilEvent += Display.ShowMsg;       //注册静态方法
 
-
-            //GreetingDelegate delegate1;
-            //delegate1 = EnglishGreeting;
-            //delegate1 += ChineseGreeting;
-            //GreetPeople("liudao", delegate1);
-            //delegate1-=ChineseGreeting;
-            //GreetPeople("六道", delegate1);
-            //Console.ReadKey();
+            ht.BoilWater();   //烧水，会自动调用注册过对象的方法
         }
     }
 }
